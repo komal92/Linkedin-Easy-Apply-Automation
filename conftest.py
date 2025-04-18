@@ -25,8 +25,8 @@ def pytest_addoption(parser):
     parser.addoption("--browser",action="store",default="chrome",help="browser type")
     parser.addoption("--platform",action="store_true",default="windows",help="platform type")
 
-@pytest.fixture(scope="class")
-def setup(request):
+@pytest.fixture
+def driver(request):
     browser = request.config.getoption("--browser")
 
     if browser == "chrome":
@@ -52,8 +52,10 @@ def setup(request):
     else:
         raise Exception(f'Broswer {browser} not supported.')
 
-    wait = WebDriverWait(driver, 10)
-    request.cls.driver = driver
-    request.cls.wait = wait
-    yield
-    driver.quit()
+    yield driver
+    #driver.quit()
+
+#This method returns wait fixture
+@pytest.fixture
+def wait(driver):
+    return WebDriverWait(driver, 10)
